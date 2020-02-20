@@ -39,6 +39,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
@@ -238,10 +239,11 @@ class CameraFragment : Fragment() {
                 override fun onFailure(call: Call, e: IOException) {}
                 override fun onResponse(call: Call, response: Response) {
                     if (context != null) {
-                        val ad = AlertDialog.Builder(context!!).create()
-                        ad.setMessage(response.body()?.string())
-                        ad.setCancelable(true)
-                        ad.show()
+                        activity?.runOnUiThread( Runnable() {
+                            run() {
+                                Toast.makeText(activity, response.body()?.string(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
 //                        println(response.body()?.string())
                     }
                 }
