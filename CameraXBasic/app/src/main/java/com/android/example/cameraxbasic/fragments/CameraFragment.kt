@@ -39,6 +39,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -69,7 +70,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.*
 import java.io.File
+import java.io.IOException
 import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -100,7 +103,7 @@ class CameraFragment : Fragment() {
     private lateinit var displayManager: DisplayManager
     private lateinit var mainExecutor: Executor
     private lateinit var analysisExecutor: Executor
-
+    private val httpClient = OkHttpClient()
     private var displayId: Int = -1
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
     private var preview: Preview? = null
@@ -225,6 +228,25 @@ class CameraFragment : Fragment() {
             MediaScannerConnection.scanFile(
                     context, arrayOf(photoFile.absolutePath), arrayOf(mimeType), null
             )
+            val url = "https://ghibliapi.herokuapp.com/people/d39deecb-2bd0-4770-8b45-485f26e1381f"
+            val request = Request.Builder()
+//                    .post()
+                    .url(url)
+                    .build()
+
+            httpClient.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {}
+                override fun onResponse(call: Call, response: Response) {
+                    if (context != null) {
+                        val ad = AlertDialog.Builder(context!!).create()
+                        ad.setMessage(response.body()?.string())
+                        ad.setCancelable(true)
+                        ad.show()
+//                        println(response.body()?.string())
+                    }
+                }
+
+            })
         }
 
         /** Define callback that will be triggered on error */

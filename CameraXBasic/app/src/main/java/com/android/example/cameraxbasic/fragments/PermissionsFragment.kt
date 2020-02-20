@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -46,6 +47,14 @@ class PermissionsFragment : Fragment() {
             Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
                     PermissionsFragmentDirections.actionPermissionsToCamera())
         }
+
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(arrayOf(Manifest.permission.INTERNET), PERMISSIONS_REQUEST_CODE)
+            // Permission is not granted
+        }
+
     }
 
     override fun onRequestPermissionsResult(
